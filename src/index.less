@@ -1,0 +1,386 @@
+@contentZIndex: 1;
+@bottomBtnsZindex: 2;
+@dragLineZIndex: 2;
+@scrollerZIndex: 3;
+@selectionRectZIndex: 4;
+@draggingRectZIndex: 5;
+@draggingZIndex: 6;
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    @font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+
+    &.dragging {
+        user-select: none!important;
+        cursor: grabbing!important;
+
+        * {
+            user-select: none!important;
+            cursor: grabbing!important;
+        }
+    }
+
+    &.selecting {
+        user-select: none!important;
+
+        * {
+            user-select: none!important;
+        }
+
+        .selection-rect {
+            display: block;
+        }
+    }
+
+    &.node-dragging {
+        .drag-line {
+            display: block;
+        }
+    }
+
+    &.dark-theme {
+        .container {
+            background-color: #202329;
+        }
+
+        .bottom-btns > div {
+            background-color: #2b2f36;
+            border-color: #2b2f36;
+        }
+
+        .scroll-bar {
+            background-color: fade(#4f545a, 90);
+        }
+
+        .node {
+            color: #fff;
+
+            &:hover {
+                border-color: #717171;
+            }
+
+            &.normal {
+                background-color: #202329;
+            }
+
+            &.main {
+                background-color: #373c43;
+            }
+
+            &.central {
+                box-shadow: none;
+
+                &:hover {
+                    border-color: #8c9fff;
+                }
+
+                &:focus {
+                    box-shadow: 0px 0px 0px 5px #212d61;
+                }
+
+                &.selected {
+                    border-color: #8c9fff;
+                }
+            }
+
+            &.selected {
+                border-color: #4d6cff;
+            }
+
+            &:focus {
+                box-shadow: 0px 0px 0px 5px #212d61;
+            }
+        }
+
+        .dragging-rect {
+            background-color: fade(#333, 50);
+            border-color: #444;
+        }
+    }
+    
+}
+
+.container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: @contentZIndex;
+    transform-origin: 0 0;
+}
+
+.bottom-btns {
+    position: absolute;
+    left: 36px;
+    bottom: 30px;
+    width: 40px;
+    z-index: @bottomBtnsZindex;
+
+    svg {
+        position: absolute;
+        top: 9px;
+        left: 9px;
+        width: 20px;
+        height: 20px;
+    }
+
+    & > div {
+        position: relative;
+        width: 40px;
+        height: 40px;
+        margin-top: 10px;
+        line-height: 40px;
+        border: 1px solid #eee;
+        box-sizing: border-box;
+        text-align: center;
+        user-select: none;
+        border-radius: 8px;
+        font-size: 12px;
+        color: #aaa;
+        background-color: rgba(255, 255, 255, 0.95);
+        cursor: pointer;
+
+        &:after {
+            content: attr(tooltip);
+            position: absolute;
+            top: 8px;
+            left: 46px;
+            padding: 0 5px;
+            height: 24px;
+            line-height: 24px;
+            font-size: 12px;
+            color: #fff;
+            background-color: fade(#444, 95);
+            border-radius: 4px;
+            transform: scale(0);
+            opacity: 0;
+            transition: all 0.15s ease;
+            transform-origin: left center;
+            white-space: nowrap;
+        }
+
+        &:hover {
+            color: #666;
+            background-color: rgba(250, 250, 250, 0.95);
+
+            &:after {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    }
+}
+
+.map {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.drag-line,
+.line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.drag-line {
+    display: none;
+    z-index: @dragLineZIndex;
+}
+
+.node {
+    position: absolute;
+    max-width: 300px;
+    min-height: 36px;
+    width: max-content;
+    height: max-content;
+    border: 2px solid transparent;
+    color: #333;
+    background-color: #eee;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 22px;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    word-break: break-word;
+    overflow-wrap: break-word;
+
+    &:hover {
+        border-color: #b1beff;
+    }
+
+    &:focus {
+        box-shadow: 0px 0px 0px 5px #dde3ff;
+        outline: 0;
+    }
+
+    &:empty:before {
+        content: attr(placeholder);
+        color: #999;
+    }
+
+    &[contenteditable="true"] {
+        user-select: text;
+    }
+
+    &.selected {
+        border-color: #1941ff;
+    }
+
+    &.central {
+        padding: 8px 12px;
+        font-size: 20px;
+        line-height: 30px;
+        color: #fff;
+        background-color: #395bff;
+        box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05);
+
+        &:hover {
+            border-color: #1941ff;
+        }
+    
+        &.selected {
+            border-color: #002cff;
+        }
+
+        &:focus {
+            box-shadow: 0px 0px 0px 5px #d4dcff;
+        }
+
+        &:empty:before {
+            color: #ccc;
+        }
+    }
+    
+    &.main {
+        font-size: 16px;
+        line-height: 26px;
+        background-color: #eee;
+    }
+    
+    &.normal {
+        background-color: #fff;
+    }
+    
+    &.example {
+        position: fixed;
+        top: 0;
+        left: 0;
+        visibility: hidden;
+        z-index: -1;
+    }
+
+    &.editting {
+        z-index: 10;
+    }
+}
+
+.scroller {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: @scrollerZIndex;
+}
+
+.h-scroller {
+    width: 14px;
+    height: 100%;
+
+    .scroll-bar {
+        width: 6px;
+        height: 100px;
+        margin-left: 4px;
+        transition: width 0.1s ease, margin-left 0.1s ease;
+
+        &.dragging,
+        &:hover {
+            width: 10px;
+            margin-left: 2px;
+        }
+    }
+}
+
+.v-scroller {
+    width: 100%;
+    height: 14px;
+
+    .scroll-bar {
+        width: 100px;
+        height: 6px;
+        margin-top: 4px;
+        transition: height 0.1s ease, margin-top 0.1s ease;
+
+        &.dragging,
+        &:hover {
+            height: 10px;
+            margin-top: 2px;
+        }
+    }
+}
+
+.scroll-bar {
+    border-radius: 10px;
+    background-color: fade(#e2e2e2, 80);
+
+    &.dragging,
+    &:hover {
+        background-color: fade(#ddd, 90);
+    }
+}
+
+.selection-rect {
+    display: none;
+    position: absolute;
+    background-color: fade(#5874ff, 10);
+    z-index: @selectionRectZIndex;
+}
+
+.dragging-snapshot {
+    position: absolute;
+    opacity: 0.5;
+    border-color: #ccc!important;
+    z-index: @draggingZIndex;
+    cursor: grabbing;
+
+    .dragging-num {
+        position: absolute;
+        top: 50%;
+        right: -40px;
+        height: 20px;
+        line-height: 20px;
+        padding: 0 10px;
+        border-radius: 10px;
+        color: #000;
+        background-color: #e4e4e4;
+        transform: translateY(-50%);
+    }
+}
+
+.dragging-rect {
+    position: absolute;
+    border-radius: 6px;
+    border: 2px dashed #b1beff;
+    background-color: fade(#fff, 50);
+    z-index: @draggingRectZIndex;
+}

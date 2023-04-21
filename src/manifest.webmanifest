@@ -1,0 +1,24 @@
+{
+    "short_name": "Mindmap",
+    "name": "Mindmap",
+    "description": "Free and open source online mindmap editor",
+    "icons": [
+        {
+        "src": "./assets/logo-192.png",
+        "purpose": "any maskable",
+        "type": "image/png",
+        "sizes": "192x192"
+        },
+        {
+        "src": "./assets/logo-512.png",
+        "purpose": "any maskable",
+        "type": "image/png",
+        "sizes": "512x512"
+        }
+    ],
+    "background_color": "#ffffff",
+    "theme_color": "#404040",
+    "scope": "./",
+    "start_url": "./",
+    "display": "standalone"
+}
