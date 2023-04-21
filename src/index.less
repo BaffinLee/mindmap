@@ -296,6 +296,36 @@ body {
     }
 }
 
+.github-link {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+
+    svg path {
+        fill: #d5d5d5;
+    }
+
+    &:hover {
+        svg path {
+            fill: #b7b7b7;
+        }
+    }
+}
+
+body.dark-theme {
+    .github-link {
+        svg path {
+            fill: #707070;
+        }
+    
+        &:hover {
+            svg path {
+                fill: #a3a3a3;
+            }
+        }
+    }
+}
+
 .scroller {
     position: absolute;
     right: 0;
